@@ -1,10 +1,15 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField
-from wtforms.validators import DataRequired, Length, Email, Regexp
+from wtforms.validators import DataRequired, Length, Regexp
 from wtforms import ValidationError
 from flask_pagedown.fields import PageDownField
 from ..models import Role, User
+
+# WTForms 3 Email() requires the optional email_validator package, so a
+# basic structural check is used instead.
+EMAIL_REGEX = r'^[^@\s]+@[^@\s]+\.[^@\s]+$'
+EMAIL_MESSAGE = 'Invalid email address.'
 
 
 class NameForm(FlaskForm):
@@ -21,7 +26,8 @@ class EditProfileForm(FlaskForm):
 
 class EditProfileAdminForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
+                                             Regexp(EMAIL_REGEX,
+                                                    message=EMAIL_MESSAGE)])
     username = StringField('Username', validators=[
         DataRequired(), Length(1, 64),
         Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
