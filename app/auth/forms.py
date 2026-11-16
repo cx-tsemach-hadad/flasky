@@ -1,13 +1,19 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
+from wtforms.validators import DataRequired, Length, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User
+
+# WTForms 3 Email() requires the optional email_validator package, so a
+# basic structural check is used instead.
+EMAIL_REGEX = r'^[^@\s]+@[^@\s]+\.[^@\s]+$'
+EMAIL_MESSAGE = 'Invalid email address.'
 
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
+                                             Regexp(EMAIL_REGEX,
+                                                    message=EMAIL_MESSAGE)])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
@@ -15,7 +21,8 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
+                                             Regexp(EMAIL_REGEX,
+                                                    message=EMAIL_MESSAGE)])
     username = StringField('Username', validators=[
         DataRequired(), Length(1, 64),
         Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
@@ -46,7 +53,8 @@ class ChangePasswordForm(FlaskForm):
 
 class PasswordResetRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
+                                             Regexp(EMAIL_REGEX,
+                                                    message=EMAIL_MESSAGE)])
     submit = SubmitField('Reset Password')
 
 
@@ -59,7 +67,8 @@ class PasswordResetForm(FlaskForm):
 
 class ChangeEmailForm(FlaskForm):
     email = StringField('New Email', validators=[DataRequired(), Length(1, 64),
-                                                 Email()])
+                                                 Regexp(EMAIL_REGEX,
+                                                    message=EMAIL_MESSAGE)])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Update Email Address')
 
